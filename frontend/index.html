@@ -1,36 +1,370 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Smart Complaint System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chennai Civic Issues Reporting System - Make Your City Better</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
+<!-- Navigation Bar -->
 <header class="navbar">
     <div class="logo">
-        🌿 <strong>Chennai Civic-Issues Reporting System</strong>
-        <span class="badge">Zero-Cost</span>
+        <i class="fas fa-city"></i>
+        <strong>Chennai Civic Portal</strong>
+        <span class="badge">Live</span>
     </div>
-    <nav>
-        <a href="dashboard.html">Public Dashboard</a>
-        <a href="report.html">Report Issue</a>
-        <a href="track.html">Track Status</a>
-        <a href="admin.html">Admin</a>
-        <button id="themeToggle" class="theme-btn">🌙</button>
-
+    <nav class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#stats">Impact</a>
+        <a href="user-login.html" class="login-link">Login</a>
+        <button id="themeToggle" class="theme-btn"><i class="fas fa-moon"></i></button>
     </nav>
+    <div class="nav-mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </div>
 </header>
 
-<div class="hero">
-    <h1>See Something? <span>Say Something.</span></h1>
-    <p>A transparent platform to report and track civic issues in your community.</p>
-
-    <div class="hero-buttons">
-        <button class="btn btn-primary" onclick="location.href='report.html'">Report Issue</button>
-        <button class="btn btn-outline" onclick="location.href='dashboard.html'">View Dashboard</button>
+<!-- Hero Section -->
+<section class="hero-section" id="home">
+    <div class="hero-content">
+        <div class="hero-text">
+            <h1 class="hero-title">
+                Make Chennai <span class="gradient-text">Better Together</span>
+            </h1>
+            <p class="hero-subtitle">
+                Report civic issues instantly. Track progress in real-time. Build a cleaner, safer community for everyone.
+            </p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="location.href='user-login.html'">
+                    <i class="fas fa-bullhorn"></i> Report an Issue
+                </button>
+                <button class="btn btn-outline" onclick="location.href='track.html'">
+                    <i class="fas fa-search"></i> Track Complaint
+                </button>
+            </div>
+            <div class="hero-stats-mini">
+                <div class="stat-mini">
+                    <strong>1,247+</strong>
+                    <span>Issues Resolved</span>
+                </div>
+                <div class="stat-mini">
+                    <strong>98%</strong>
+                    <span>User Satisfaction</span>
+                </div>
+                <div class="stat-mini">
+                    <strong>24hrs</strong>
+                    <span>Avg Response Time</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="floating-card card-1">
+                <i class="fas fa-check-circle"></i>
+                <span>Issue Resolved</span>
+            </div>
+            <div class="floating-card card-2">
+                <i class="fas fa-tools"></i>
+                <span>Worker Assigned</span>
+            </div>
+            <div class="floating-card card-3">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Location Tracked</span>
+            </div>
+            <div class="hero-illustration">
+                <i class="fas fa-city fa-10x"></i>
+            </div>
+        </div>
     </div>
-</div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section" id="features">
+    <div class="section-header">
+        <h2>Why Choose Our Platform?</h2>
+        <p>Comprehensive tools for efficient civic issue management</p>
+    </div>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <h3>Quick Reporting</h3>
+            <p>Report any civic issue in under 2 minutes with photo upload and GPS location tagging.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-eye"></i>
+            </div>
+            <h3>Real-Time Tracking</h3>
+            <p>Track your complaint status from submission to resolution with live updates.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-map-marked-alt"></i>
+            </div>
+            <h3>Ward-Based Heatmaps</h3>
+            <p>Visual analytics showing problem hotspots across different wards in Chennai.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <h3>Multi-Role Access</h3>
+            <p>Separate dashboards for citizens, workers, and administrators for better workflow.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3>Secure & Private</h3>
+            <p>Your data is protected with industry-standard encryption and security measures.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h3>Performance Analytics</h3>
+            <p>Track resolution times, worker performance, and improvement trends.</p>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works-section" id="how-it-works">
+    <div class="section-header">
+        <h2>How It Works</h2>
+        <p>Simple 4-step process to report and resolve civic issues</p>
+    </div>
+    <div class="steps-container">
+        <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h3>Create Account</h3>
+            <p>Sign up with your email and verify your account in seconds.</p>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-icon">
+                <i class="fas fa-camera"></i>
+            </div>
+            <h3>Report Issue</h3>
+            <p>Take a photo, add location, describe the problem, and submit.</p>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-icon">
+                <i class="fas fa-user-hard-hat"></i>
+            </div>
+            <h3>Worker Assigned</h3>
+            <p>Our system assigns the right worker based on issue type and ward.</p>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-icon">
+                <i class="fas fa-check-double"></i>
+            </div>
+            <h3>Issue Resolved</h3>
+            <p>Get notified when resolved and provide feedback on the service.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section" id="stats">
+    <div class="section-header">
+        <h2>Our Impact on Chennai</h2>
+        <p>Real numbers, real impact on our community</p>
+    </div>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-flag"></i>
+            </div>
+            <div class="stat-number" data-target="1542">0</div>
+            <div class="stat-label">Total Complaints</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-number" data-target="1247">0</div>
+            <div class="stat-label">Issues Resolved</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-number" data-target="863">0</div>
+            <div class="stat-label">Active Citizens</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-hard-hat"></i>
+            </div>
+            <div class="stat-number" data-target="42">0</div>
+            <div class="stat-label">Active Workers</div>
+        </div>
+    </div>
+</section>
+
+<!-- Issue Categories Section -->
+<section class="categories-section">
+    <div class="section-header">
+        <h2>Report Any Civic Issue</h2>
+        <p>We handle all types of civic complaints</p>
+    </div>
+    <div class="categories-grid">
+        <div class="category-card">
+            <i class="fas fa-road"></i>
+            <h4>Potholes</h4>
+        </div>
+        <div class="category-card">
+            <i class="fas fa-lightbulb"></i>
+            <h4>Street Lights</h4>
+        </div>
+        <div class="category-card">
+            <i class="fas fa-tint"></i>
+            <h4>Water Supply</h4>
+        </div>
+        <div class="category-card">
+            <i class="fas fa-trash-alt"></i>
+            <h4>Waste Management</h4>
+        </div>
+        <div class="category-card">
+            <i class="fas fa-tree"></i>
+            <h4>Tree Cutting</h4>
+        </div>
+        <div class="category-card">
+            <i class="fas fa-water"></i>
+            <h4>Drainage</h4>
+        </div>
+        <div class="category-card">
+            <i class="fas fa-building"></i>
+            <h4>Public Property</h4>
+        </div>
+        <div class="category-card">
+            <i class="fas fa-ellipsis-h"></i>
+            <h4>Other Issues</h4>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="cta-content">
+        <h2>Ready to Make a Difference?</h2>
+        <p>Join thousands of citizens working together to improve Chennai</p>
+        <div class="cta-buttons">
+            <button class="btn btn-primary btn-large" onclick="location.href='user-register.html'">
+                <i class="fas fa-user-plus"></i> Sign Up Now
+            </button>
+            <button class="btn btn-outline-white btn-large" onclick="location.href='user-login.html'">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3><i class="fas fa-city"></i> Chennai Civic Portal</h3>
+            <p>Building a better Chennai, one report at a time.</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </div>
+        <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="user-register.html">Register</a></li>
+                <li><a href="user-login.html">Login</a></li>
+                <li><a href="report.html">Report Issue</a></li>
+                <li><a href="track.html">Track Complaint</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>For Officials</h4>
+            <ul>
+                <li><a href="admin-login.html">Admin Login</a></li>
+                <li><a href="worker-login.html">Worker Login</a></li>
+                <li><a href="ward-heatmap.html">View Heatmap</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Contact</h4>
+            <ul>
+                <li><i class="fas fa-envelope"></i> support@chennaicivic.in</li>
+                <li><i class="fas fa-phone"></i> 044-1234-5678</li>
+                <li><i class="fas fa-map-marker-alt"></i> Chennai, Tamil Nadu</li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2026 Chennai Civic Issues Reporting System. All rights reserved.</p>
+    </div>
+</footer>
+
 <script src="js/main.js"></script>
+<script>
+    // Counter animation for stats
+    document.addEventListener('DOMContentLoaded', function() {
+        const counters = document.querySelectorAll('.stat-number');
+        const speed = 200;
+
+        const animateCounter = (counter) => {
+            const target = +counter.getAttribute('data-target');
+            const count = +counter.innerText;
+            const increment = target / speed;
+
+            if (count < target) {
+                counter.innerText = Math.ceil(count + increment);
+                setTimeout(() => animateCounter(counter), 1);
+            } else {
+                counter.innerText = target;
+            }
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        counters.forEach(counter => observer.observe(counter));
+    });
+
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+</script>
 
 </body>
 </html>

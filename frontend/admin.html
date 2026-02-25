@@ -13,20 +13,38 @@
     <div class="logo">🌿 <strong>Chennai Civic-Issues Reporting System</strong></div>
     <nav>
         <a href="index.html">Home</a>
+        <a href="admin.html">Dashboard</a>
+        <a href="ward-heatmap.html">Ward Heatmap</a>
+        <a href="admin-workers.html">Workers</a>
+        <span id="adminWelcome" style="color: #16a34a; font-weight: 500;"></span>
+        <button onclick="handleLogout()" style="background: #dc2626; color: white; padding: 6px 14px; border: none; border-radius: 6px; cursor: pointer; margin-left: 10px;">
+            Logout
+        </button>
         <button id="themeToggle" class="theme-btn">🌙</button>
-
     </nav>
 </header>
 
-<h2 style="margin:40px;">Admin Control Panel</h2>
+<div style="margin: 40px; display: flex; justify-content: space-between; align-items: center;">
+    <h2 style="margin: 0;">Admin Control Panel</h2>
+    <button onclick="loadAdminComplaints()" style="background: #16a34a; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+        🔄 Refresh Dashboard
+    </button>
+</div>
+<div style="margin: 0 40px 20px; padding: 10px; background: #dcfce7; border-left: 4px solid #16a34a; border-radius: 4px; font-size: 14px;">
+    ℹ️ Dashboard auto-refreshes every 30 seconds to show worker updates in real-time
+</div>
 
 <table>
     <thead>
         <tr>
             <th>Complaint ID</th>
+            <th>Name</th>
+            <th>Image</th>
             <th>Category</th>
-            <th>Area</th>
+            <th>Ward Number</th>
             <th>Status</th>
+            <th>Assigned To</th>
+            <th>Same Issue Users</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -36,7 +54,78 @@
 </table>
 <br>
 <div id="adminStatusChart" style="width: 100%; height: 300px; margin-bottom: 30px;"></div>
+
+<script>
+    // Authentication Check - Must be logged in to access this page
+    (function checkAuth() {
+        const isLoggedIn = localStorage.getItem("adminLoggedIn");
+        const adminUsername = localStorage.getItem("adminUsername");
+
+        if (isLoggedIn !== "true") {
+            // Not logged in, redirect to login page
+            window.location.href = "admin-login.html";
+            return;
+        }
+
+        // Display welcome message
+        const welcomeSpan = document.getElementById("adminWelcome");
+        const adminWardNumber = localStorage.getItem("adminWardNumber");
+        if (welcomeSpan && adminUsername) {
+            const wardText = adminWardNumber ? ` | 📍 ${adminWardNumber}` : "";
+            welcomeSpan.textContent = `Welcome, ${adminUsername}${wardText}`;
+        }
+    })();
+
+    // Logout function
+    function handleLogout() {
+        if (confirm("Are you sure you want to logout?")) {
+            localStorage.removeItem("adminLoggedIn");
+            localStorage.removeItem("adminUsername");
+            localStorage.removeItem("adminId");
+            localStorage.removeItem("adminWardNumber");
+            window.location.href = "admin-login.html";
+        }
+    }
+</script>
+
 <script src="js/main.js"></script>
 <script src="js/admin.js"></script>
+
+<script>
+    // Auto-refresh admin dashboard every 30 seconds to show worker updates
+    let autoRefreshInterval;
+    
+    function startAutoRefresh() {
+        // Initial load
+        if (typeof loadAdminComplaints === 'function') {
+            loadAdminComplaints();
+        }
+        
+        // Refresh every 30 seconds
+        autoRefreshInterval = setInterval(() => {
+            if (typeof loadAdminComplaints === 'function') {
+                loadAdminComplaints();
+            }
+        }, 30000); // 30 seconds
+    }
+    
+    // Start auto-refresh when page loads
+    document.addEventListener('DOMContentLoaded', startAutoRefresh);
+    
+    // Stop auto-refresh when leaving page
+    window.addEventListener('beforeunload', () => {
+        if (autoRefreshInterval) {
+            clearInterval(autoRefreshInterval);
+        }
+    });
+</script>
+
+<!-- Image Modal -->
+<div id="imageModal" class="image-modal">
+    <span class="close-modal" onclick="closeImageModal()">&times;</span>
+    <img class="modal-content-img" id="modalImage">
+    <div id="caption"></div>
+</div>
+
 </body>
 </html>

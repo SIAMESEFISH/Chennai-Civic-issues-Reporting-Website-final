@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Login - Chennai Civic-Issues Reporting System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .login-container {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .login-card h2 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #16a34a;
+        }
+
+        .login-card p {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #16a34a;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .login-btn:hover {
+            background: #15803d;
+        }
+
+        .login-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        .success-message {
+            background: #dcfce7;
+            color: #16a34a;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #16a34a;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 15px;
+            color: #6b7280;
+        }
+
+        .register-link a {
+            color: #16a34a;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Dark Mode Styles */
+        body.dark .login-card {
+            background: var(--card-dark);
+            box-shadow: 0 0 12px rgba(0, 229, 255, 0.15);
+        }
+
+        body.dark .login-card h2 {
+            color: var(--neon-blue);
+        }
+
+        body.dark .login-card p {
+            color: #d0d0d0;
+        }
+
+        body.dark .form-group label {
+            color: #e6e6e6;
+        }
+
+        body.dark .form-group input {
+            background: #1a202c;
+            border-color: #374151;
+            color: #e6e6e6;
+        }
+
+        body.dark .form-group input:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.2);
+        }
+
+        body.dark .register-link {
+            color: #9ca3af;
+        }
+
+        body.dark .register-link a {
+            color: var(--neon-blue);
+        }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">
+        🌿 <strong>Chennai Civic-Issues Reporting System</strong>
+    </div>
+    <nav>
+        <a href="index.html">Home</a>
+        <button id="themeToggle" class="theme-btn">🌙</button>
+    </nav>
+</header>
+
+<div class="login-container">
+    <div class="login-card">
+        <h2>👤 User Login</h2>
+        <p>Access your dashboard and track your complaints</p>
+
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    placeholder="yourname@example.com"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    placeholder="Enter your password"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">
+                Login
+            </button>
+        </form>
+
+        <div class="register-link">
+            Don't have an account? <a href="user-register.html">Register here</a>
+        </div>
+
+        <div class="back-link">
+            <a href="index.html">← Back to Home</a>
+        </div>
+    </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+    const API_URL = "http://localhost:5000/api/users";
+
+    async function handleLogin(event) {
+        event.preventDefault();
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const errorDiv = document.getElementById("errorMessage");
+        const successDiv = document.getElementById("successMessage");
+        const loginBtn = document.getElementById("loginBtn");
+
+        // Hide previous messages
+        errorDiv.style.display = "none";
+        successDiv.style.display = "none";
+
+        // Disable button during login
+        loginBtn.disabled = true;
+        loginBtn.textContent = "Logging in...";
+
+        try {
+            const response = await fetch(`${API_URL}/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Store user session
+                localStorage.setItem("userLoggedIn", "true");
+                localStorage.setItem("userName", data.user.name);
+                localStorage.setItem("userEmail", data.user.email);
+                localStorage.setItem("userId", data.user.id);
+                localStorage.setItem("userWardNumber", data.user.wardNumber || "");
+
+                // Show success message
+                successDiv.textContent = "Login successful! Redirecting to dashboard...";
+                successDiv.style.display = "block";
+
+                // Redirect to dashboard
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 1000);
+            } else {
+                // Show error message
+                errorDiv.textContent = data.message || "Login failed. Please try again.";
+                errorDiv.style.display = "block";
+                loginBtn.disabled = false;
+                loginBtn.textContent = "Login";
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            errorDiv.textContent = "Server error. Please make sure the backend is running.";
+            errorDiv.style.display = "block";
+            loginBtn.disabled = false;
+            loginBtn.textContent = "Login";
+        }
+    }
+
+    // Check if already logged in
+    if (localStorage.getItem("userLoggedIn") === "true") {
+        window.location.href = "dashboard.html";
+    }
+</script>
+
+</body>
+</html>

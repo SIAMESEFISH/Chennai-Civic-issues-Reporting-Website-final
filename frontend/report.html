@@ -11,7 +11,7 @@
     <div class="logo">🌿 <strong>Chennai Civic-Issues Reporting System</strong></div>
     <nav>
         <a href="index.html">Home</a>
-        <a href="dashboard.html">Dashboard</a>
+        <a href="user-login.html">Dashboard</a>
         <button id="themeToggle" class="theme-btn">🌙</button>
 
     </nav>
@@ -34,6 +34,9 @@
         </select>
         <input type="text" id="otherCategoryInput" placeholder="Enter custom category" style="display:none; margin-top: 10px;">
 
+        <!-- Ward Number Field -->
+        <input type="text" id="wardNumber" placeholder="Enter Ward Number (e.g., Ward 1, Ward 2, Ward 3)" style="margin-top: 10px;">
+
         <!-- <input type="text" id="location" placeholder="Area / Landmark" required> -->
         <div class="form-group" style="margin-top: 15px;">
             <label style="font-weight: bold; display: block; margin-bottom: 5px;">Pinpoint Location</label>
@@ -48,7 +51,7 @@
 
             <div id="map" style="height: 250px; width: 100%; border-radius: 8px; margin-bottom: 10px; border: 1px solid #ccc; z-index: 1;"></div>
 
-            <input type="text" id="location" placeholder="Enter address or use map above" required>
+            <input type="text" id="location" placeholder="Enter detailed address or landmark" required>
             
             <input type="hidden" id="latitude">
             <input type="hidden" id="longitude">
@@ -67,5 +70,16 @@
 
 <script src="js/main.js"></script>
 <script src="js/admin_map.js"></script>
+<script>
+    // Pre-fill Ward Number from logged-in user's profile
+    window.addEventListener('DOMContentLoaded', () => {
+        const userWardNumber = localStorage.getItem("userWardNumber");
+        const wardNumberInput = document.getElementById("wardNumber");
+        
+        if (userWardNumber && wardNumberInput) {
+            wardNumberInput.value = userWardNumber;
+        }
+    });
+</script>
 </body>
 </html>

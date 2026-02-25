@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Registration - Chennai Civic-Issues Reporting System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .login-container {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .login-card h2 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #16a34a;
+        }
+
+        .login-card p {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #16a34a;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .login-btn:hover {
+            background: #15803d;
+        }
+
+        .login-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        .success-message {
+            background: #dcfce7;
+            color: #16a34a;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #16a34a;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Dark Mode Styles */
+        body.dark .login-card {
+            background: var(--card-dark);
+            box-shadow: 0 0 12px rgba(0, 229, 255, 0.15);
+        }
+
+        body.dark .login-card h2 {
+            color: var(--neon-blue);
+        }
+
+        body.dark .login-card p {
+            color: #d0d0d0;
+        }
+
+        body.dark .form-group label {
+            color: #e6e6e6;
+        }
+
+        body.dark .form-group input {
+            background: #1a202c;
+            border-color: #374151;
+            color: #e6e6e6;
+        }
+
+        body.dark .form-group input:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.2);
+        }
+
+        .info-box {
+            background: #e0f2fe;
+            border-left: 4px solid #0284c7;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        body.dark .info-box {
+            background: #1e3a5f;
+            border-left-color: var(--neon-blue);
+            color: #d0d0d0;
+        }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">
+        🌿 <strong>Chennai Civic-Issues Reporting System</strong>
+    </div>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <button id="themeToggle" class="theme-btn">🌙</button>
+    </nav>
+</header>
+
+<div class="login-container">
+    <div class="login-card">
+        <h2>📝 Create Admin Account</h2>
+        <p>First-time setup for administrative access</p>
+
+        <div class="info-box">
+            ℹ️ This creates an admin account to access the control panel.
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <form id="registerForm" onsubmit="handleRegister(event)">
+            <div class="form-group">
+                <label for="username">Username *</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    placeholder="Choose a username"
+                    required
+                    minlength="3"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    placeholder="admin@example.com"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password *</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    placeholder="Create a strong password"
+                    required
+                    minlength="6"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password *</label>
+                <input 
+                    type="password" 
+                    id="confirmPassword" 
+                    name="confirmPassword" 
+                    placeholder="Re-enter password"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="wardNumber">Ward Number</label>
+                <input 
+                    type="text" 
+                    id="wardNumber" 
+                    name="wardNumber" 
+                    placeholder="e.g., Ward 1, Ward 2, Ward 3 (Optional)"
+                >
+            </div>
+
+            <button type="submit" class="login-btn" id="registerBtn">
+                Create Account
+            </button>
+        </form>
+
+        <div class="back-link">
+            Already have an account? <a href="admin-login.html">Login here</a>
+        </div>
+
+        <div class="back-link">
+            <a href="index.html">← Back to Home</a>
+        </div>
+    </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+    const API_URL = "http://localhost:5000/api/auth";
+
+    async function handleRegister(event) {
+        event.preventDefault();
+
+        const username = document.getElementById("username").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        const wardNumber = document.getElementById("wardNumber").value;
+        const errorDiv = document.getElementById("errorMessage");
+        const successDiv = document.getElementById("successMessage");
+        const registerBtn = document.getElementById("registerBtn");
+
+        // Hide previous messages
+        errorDiv.style.display = "none";
+        successDiv.style.display = "none";
+
+        // Validate passwords match
+        if (password !== confirmPassword) {
+            errorDiv.textContent = "Passwords do not match!";
+            errorDiv.style.display = "block";
+            return;
+        }
+
+        // Disable button during registration
+        registerBtn.disabled = true;
+        registerBtn.textContent = "Creating Account...";
+
+        try {
+            const response = await fetch(`${API_URL}/register`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, email, password, wardNumber })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Show success message
+                successDiv.textContent = "Account created successfully! Redirecting to login...";
+                successDiv.style.display = "block";
+
+                // Clear form
+                document.getElementById("registerForm").reset();
+
+                // Redirect to login page
+                setTimeout(() => {
+                    window.location.href = "admin-login.html";
+                }, 2000);
+            } else {
+                // Show error message
+                errorDiv.textContent = data.message || "Registration failed. Please try again.";
+                errorDiv.style.display = "block";
+                registerBtn.disabled = false;
+                registerBtn.textContent = "Create Account";
+            }
+        } catch (error) {
+            console.error("Registration error:", error);
+            errorDiv.textContent = "Server error. Please make sure the backend is running.";
+            errorDiv.style.display = "block";
+            registerBtn.disabled = false;
+            registerBtn.textContent = "Create Account";
+        }
+    }
+</script>
+
+</body>
+</html>

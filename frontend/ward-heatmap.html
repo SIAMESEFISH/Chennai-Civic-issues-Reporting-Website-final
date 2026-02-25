@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ward-Based Heatmap Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+        .heatmap-container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .dashboard-header h2 {
+            color: #16a34a;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card h3 {
+            font-size: 2.5em;
+            margin: 0 0 10px 0;
+            color: #16a34a;
+        }
+
+        .stat-card p {
+            margin: 0;
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .ward-table-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+
+        .ward-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .ward-table th {
+            background: #16a34a;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .ward-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .ward-table tr:hover {
+            background: #f3f4f6;
+        }
+
+        .heatmap-bar {
+            height: 25px;
+            background: linear-gradient(to right, #fef3c7, #fbbf24, #f59e0b, #dc2626);
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .heatmap-intensity {
+            height: 100%;
+            background: #dc2626;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            margin: 2px;
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .filter-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-section label {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .filter-section select {
+            padding: 8px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        /* Dark mode support */
+        body.dark .stat-card,
+        body.dark .chart-container,
+        body.dark .ward-table-container,
+        body.dark .filter-section {
+            background: #1f2937;
+            color: #f0f0f0;
+        }
+
+        body.dark .ward-table th {
+            background: #059669;
+        }
+
+        body.dark .ward-table td {
+            border-bottom-color: #374151;
+        }
+
+        body.dark .ward-table tr:hover {
+            background: #374151;
+        }
+
+        body.dark .stat-card p,
+        body.dark .filter-section label {
+            color: #d1d5db;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">🌿 <strong>Chennai Civic-Issues Reporting System</strong></div>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="admin.html">Dashboard</a>
+        <a href="ward-heatmap.html" style="color: #16a34a;">Ward Heatmap</a>
+        <span id="adminWelcome" style="color: #16a34a; font-weight: 500;"></span>
+        <button onclick="handleLogout()" style="background: #dc2626; color: white; padding: 6px 14px; border: none; border-radius: 6px; cursor: pointer; margin-left: 10px;">
+            Logout
+        </button>
+        <button id="themeToggle" class="theme-btn">🌙</button>
+    </nav>
+</header>
+
+<div class="heatmap-container">
+    <div class="dashboard-header">
+        <h2>🗺️ Ward-Based Complaint Heatmap</h2>
+        <p style="color: #666; font-size: 1.1em;">Visual analysis of civic issues across Chennai wards</p>
+    </div>
+
+    <!-- Summary Statistics -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3 id="totalWards">0</h3>
+            <p>Total Wards</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="totalComplaints">0</h3>
+            <p>Total Complaints</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="pendingComplaints">0</h3>
+            <p>Pending</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="resolvedComplaints">0</h3>
+            <p>Resolved</p>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <label for="statusFilter">Filter by Status:</label>
+        <select id="statusFilter">
+            <option value="all">All Complaints</option>
+            <option value="pending">Pending Only</option>
+            <option value="resolved">Resolved Only</option>
+        </select>
+        
+        <label for="sortBy">Sort by:</label>
+        <select id="sortBy">
+            <option value="total">Total Complaints</option>
+            <option value="pending">Pending Count</option>
+            <option value="resolved">Resolved Count</option>
+        </select>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-grid">
+        <div class="chart-container">
+            <div id="wardHeatmapChart" style="width: 100%; height: 400px;"></div>
+        </div>
+        <div class="chart-container">
+            <div id="categoryDistChart" style="width: 100%; height: 400px;"></div>
+        </div>
+    </div>
+
+    <!-- Ward Table -->
+    <div class="ward-table-container">
+        <h3 style="margin-top: 0; color: #16a34a;">📊 Ward-wise Breakdown</h3>
+        <table class="ward-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Ward/Area</th>
+                    <th>Total</th>
+                    <th>Pending</th>
+                    <th>Resolved</th>
+                    <th>Heat Intensity</th>
+                    <th>Top Categories</th>
+                </tr>
+            </thead>
+            <tbody id="wardTableBody">
+                <!-- Data will be loaded dynamically -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Authentication Check
+    (function checkAuth() {
+        const isLoggedIn = localStorage.getItem("adminLoggedIn");
+        const adminUsername = localStorage.getItem("adminUsername");
+
+        if (isLoggedIn !== "true") {
+            window.location.href = "admin-login.html";
+            return;
+        }
+
+        const welcomeSpan = document.getElementById("adminWelcome");
+        if (welcomeSpan && adminUsername) {
+            welcomeSpan.textContent = `Welcome, ${adminUsername}`;
+        }
+    })();
+
+    function handleLogout() {
+        if (confirm("Are you sure you want to logout?")) {
+            localStorage.removeItem("adminLoggedIn");
+            localStorage.removeItem("adminUsername");
+            localStorage.removeItem("adminId");
+            window.location.href = "admin-login.html";
+        }
+    }
+</script>
+
+<script src="js/main.js"></script>
+<script src="js/ward-heatmap.js"></script>
+
+</body>
+</html>

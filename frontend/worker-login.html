@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Worker Login - Chennai Civic System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .worker-login-container {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .worker-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        body.dark .worker-card {
+            background: var(--card-dark);
+            box-shadow: 0 0 12px rgba(0, 229, 255, 0.15);
+        }
+
+        .worker-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .worker-header h2 {
+            color: #16a34a;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        body.dark .worker-header h2 {
+            color: var(--neon-blue);
+        }
+
+        .worker-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        body.dark .form-group label {
+            color: #e6e6e6;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        body.dark .form-group input {
+            background: #1f2937;
+            border-color: #374151;
+            color: #e6e6e6;
+        }
+
+        .worker-btn {
+            width: 100%;
+            padding: 14px;
+            background: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .worker-btn:hover {
+            background: #15803d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        }
+
+        body.dark .worker-btn {
+            background: var(--neon-blue);
+            color: #000;
+        }
+
+        body.dark .worker-btn:hover {
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+
+        .worker-links {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .worker-links a {
+            color: #16a34a;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        body.dark .worker-links a {
+            color: var(--neon-blue);
+        }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">🌿 <strong>Chennai Civic-Issues Reporting System</strong></div>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="user-login.html">User Login</a>
+        <a href="admin-login.html">Admin Login</a>
+        <a href="worker-login.html">Worker Login</a>
+        <button id="themeToggle" class="theme-btn">🌙</button>
+    </nav>
+</header>
+
+<div class="worker-login-container">
+    <div class="worker-card">
+        <div class="worker-header">
+            <div class="worker-icon">👷</div>
+            <h2>Worker Login</h2>
+            <p style="color: #6b7280;">Access your assigned tasks</p>
+        </div>
+
+        <form id="workerLoginForm" onsubmit="handleWorkerLogin(event)">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required placeholder="worker@example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Enter your password">
+            </div>
+
+            <button type="submit" class="worker-btn">Login</button>
+        </form>
+
+        <div class="worker-links">
+            <p>Not a worker? <a href="user-login.html">User Login</a> | <a href="admin-login.html">Admin Login</a></p>
+        </div>
+    </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+    async function handleWorkerLogin(e) {
+        e.preventDefault();
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        try {
+            const res = await fetch("http://localhost:5000/api/workers/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                alert(data.message || "Login failed");
+                return;
+            }
+
+            // Store worker info in localStorage
+            localStorage.setItem("workerLoggedIn", "true");
+            localStorage.setItem("workerId", data.worker.workerId);
+            localStorage.setItem("workerName", data.worker.name);
+            localStorage.setItem("workerEmail", data.worker.email);
+            localStorage.setItem("workerWardNumber", data.worker.assignedWard);
+            localStorage.setItem("workerSpecialization", data.worker.specialization);
+
+            alert(`✅ Welcome, ${data.worker.name}!`);
+            window.location.href = "worker-dashboard.html";
+
+        } catch (err) {
+            console.error(err);
+            alert("Login failed. Please check your credentials.");
+        }
+    }
+</script>
+
+</body>
+</html>

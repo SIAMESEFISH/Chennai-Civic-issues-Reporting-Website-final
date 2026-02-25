@@ -1,13 +1,19 @@
 // ==========================================
 // 0. CONFIGURATION
 // ==========================================
-const API_URL = "https://civicconnect-smart-complaint-reporting.onrender.com/api/complaints";
+const API_URL = "http://localhost:5000/api/complaints";
+const WORKER_API_URL = "http://localhost:5000/api/workers";
+
+let allWorkers = [];
 
 // ==========================================
 // 1. DATA LOADING (TABLE)
 // ==========================================
 async function loadAdminComplaints() {
     try {
+        // Load workers first for assignment dropdown
+        await loadWorkers();
+
         const res = await fetch(API_URL);
         const data = await res.json();
 
@@ -17,12 +23,66 @@ async function loadAdminComplaints() {
         table.innerHTML = "";
 
         data.forEach(c => {
+            const reporters = Array.isArray(c.sameIssueReports) ? c.sameIssueReports : [];
+            const reportersCount = reporters.length;
+            const reportersData = encodeURIComponent(JSON.stringify(reporters));
+
+            // Get assigned worker info
+            const assignedWorker = c.assignedTo?.workerName || "Unassigned";
+            const isAssigned = c.assignedTo?.workerId ? true : false;
+            
+            // Get work progress details
+            const workStarted = c.workProgress?.startedAt;
+            const workCompleted = c.workProgress?.completedAt;
+            const workerNotes = c.workProgress?.workerNotes;
+            
+            // Build worker info display with progress
+            let workerDisplay = `<strong style="color: ${isAssigned ? '#16a34a' : '#6b7280'};">${assignedWorker}</strong>`;
+            
+            if (workStarted) {
+                workerDisplay += `<div style="font-size: 11px; color: #3b82f6;">Started: ${new Date(workStarted).toLocaleString()}</div>`;
+            }
+            if (workCompleted) {
+                workerDisplay += `<div style="font-size: 11px; color: #16a34a;">✅ Completed: ${new Date(workCompleted).toLocaleString()}</div>`;
+            }
+            if (workerNotes) {
+                workerDisplay += `<div style="font-size: 11px; color: #6b7280; margin-top: 4px;">📝 ${workerNotes.substring(0, 50)}${workerNotes.length > 50 ? '...' : ''}</div>`;
+            }
+
             table.innerHTML += `
                 <tr>
                     <td>${c.complaintId}</td>
+                    <td>${c.name}</td>
+                    <td>
+                        ${c.image ? `<img src="http://localhost:5000/uploads/${c.image}" width="80" onclick="openImageModal('http://localhost:5000/uploads/${c.image}', 'ID: ${c.complaintId} - ${c.category}')" title="Click to view full size">` : "No Image"}
+                    </td>
                     <td>${c.category}</td>
-                    <td>${c.area}</td>
+                    <td>${c.wardNumber || c.area}</td>
                     <td><span class="status-badge ${c.status.toLowerCase()}">${c.status}</span></td>
+                    <td>
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            ${workerDisplay}
+                            ${!isAssigned && c.status !== "Resolved" ? `
+                                <button class="btn-assign" onclick="showAssignDialog('${c._id}', '${c.wardNumber || c.area}')" style="padding: 4px 8px; font-size: 12px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                    Assign Worker
+                                </button>
+                            ` : ''}
+                            ${isAssigned && c.status !== "Resolved" ? `
+                                <button class="btn-reassign" onclick="showReassignDialog('${c._id}', '${c.wardNumber || c.area}', '${c.assignedTo.workerId}')" style="padding: 4px 8px; font-size: 12px; background: #f59e0b; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                    Reassign
+                                </button>
+                                <button class="btn-unassign" onclick="unassignWorker('${c._id}')" style="padding: 4px 8px; font-size: 12px; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                    Unassign
+                                </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                    <td>
+                        ${reportersCount > 0
+                            ? `<button class="btn-view" data-reporters="${reportersData}" onclick="showReporters(this)">View (${reportersCount})</button>`
+                            : "None"
+                        }
+                    </td>
                     <td>
                         ${c.status !== "Resolved" ? `
                             <button class="btn-resolve" data-id="${c._id}" onclick="markResolved(this)">
@@ -40,6 +100,17 @@ async function loadAdminComplaints() {
     } catch (err) {
         console.error(err);
         alert("Failed to load complaints from server.");
+    }
+}
+
+// Load workers for assignment
+async function loadWorkers() {
+    try {
+        const res = await fetch(WORKER_API_URL);
+        allWorkers = await res.json();
+    } catch (err) {
+        console.error("Error loading workers:", err);
+        allWorkers = [];
     }
 }
 
@@ -88,6 +159,40 @@ async function deleteComplaint(btn) {
         console.error(err);
         alert("Server error during deletion.");
     }
+}
+
+function showReporters(button) {
+    const encoded = button.dataset.reporters || "";
+
+    if (!encoded) {
+        alert("No users have reported this issue yet.");
+        return;
+    }
+
+    let reporters = [];
+
+    try {
+        reporters = JSON.parse(decodeURIComponent(encoded));
+    } catch (err) {
+        alert("Unable to load reporter details.");
+        return;
+    }
+
+    if (!Array.isArray(reporters) || reporters.length === 0) {
+        alert("No users have reported this issue yet.");
+        return;
+    }
+
+    const lines = reporters.map((reporter, index) => {
+        const name = reporter.name || "Unknown";
+        const email = reporter.email || "N/A";
+        const reportedAt = reporter.reportedAt
+            ? new Date(reporter.reportedAt).toLocaleString()
+            : "Unknown time";
+        return `${index + 1}. ${name} (${email}) - ${reportedAt}`;
+    });
+
+    alert(`Users who reported the same issue:\n\n${lines.join("\n")}`);
 }
 
 // ==========================================
@@ -168,3 +273,160 @@ document.addEventListener("DOMContentLoaded", () => {
     // Load initial data
     loadAdminComplaints();
 });
+
+// ==========================================
+// 5. IMAGE MODAL FUNCTIONS
+// ==========================================
+function openImageModal(imageSrc, captionText) {
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const caption = document.getElementById('caption');
+    
+    modal.style.display = 'block';
+    modalImg.src = imageSrc;
+    caption.innerHTML = captionText || 'Complaint Image';
+    
+    // Close modal when clicking outside the image
+    modal.onclick = function(event) {
+        if (event.target === modal) {
+            closeImageModal();
+        }
+    }
+    
+    // Close modal with Escape key
+    document.onkeydown = function(event) {
+        if (event.key === 'Escape') {
+            closeImageModal();
+        }
+    }
+}
+
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    modal.style.display = 'none';
+}
+
+// ==========================================
+// 6. WORKER ASSIGNMENT FUNCTIONS
+// ==========================================
+function showAssignDialog(complaintId, wardNumber) {
+    // Filter workers by ward - check if worker's assigned wards include the complaint's ward
+    const availableWorkers = allWorkers.filter(w => {
+        if (!w.isActive) return false;
+        
+        // Check if worker's assigned ward contains this ward number
+        const workerWards = w.assignedWard.toLowerCase();
+        const complaintWard = wardNumber.toLowerCase();
+        
+        return workerWards.includes(complaintWard);
+    });
+
+    if (availableWorkers.length === 0) {
+        alert(`No active workers available for Ward Number: ${wardNumber}\n\nPlease register a worker for this ward first.`);
+        return;
+    }
+
+    const workerOptions = availableWorkers.map(w => 
+        `${w.workerId}: ${w.name} (${w.specialization})`
+    ).join('\n');
+
+    const selectedWorker = prompt(
+        `Select a worker to assign:\n\n${workerOptions}\n\nEnter Worker ID:`
+    );
+
+    if (selectedWorker) {
+        const worker = availableWorkers.find(w => w.workerId === selectedWorker.trim());
+        if (worker) {
+            assignWorkerToTask(complaintId, worker.workerId, worker.name);
+        } else {
+            alert("Invalid Worker ID");
+        }
+    }
+}
+
+function showReassignDialog(complaintId, wardNumber, currentWorkerId) {
+    // Filter workers by ward, excluding current worker
+    const availableWorkers = allWorkers.filter(w => {
+        if (!w.isActive || w.workerId === currentWorkerId) return false;
+        
+        // Check if worker's assigned ward contains this ward number
+        const workerWards = w.assignedWard.toLowerCase();
+        const complaintWard = wardNumber.toLowerCase();
+        
+        return workerWards.includes(complaintWard);
+    });
+
+    if (availableWorkers.length === 0) {
+        alert(`No other active workers available for Ward Number: ${wardNumber}`);
+        return;
+    }
+
+    const workerOptions = availableWorkers.map(w => 
+        `${w.workerId}: ${w.name} (${w.specialization})`
+    ).join('\n');
+
+    const selectedWorker = prompt(
+        `Reassign to another worker:\n\n${workerOptions}\n\nEnter Worker ID:`
+    );
+
+    if (selectedWorker) {
+        const worker = availableWorkers.find(w => w.workerId === selectedWorker.trim());
+        if (worker) {
+            assignWorkerToTask(complaintId, worker.workerId, worker.name);
+        } else {
+            alert("Invalid Worker ID");
+        }
+    }
+}
+
+async function assignWorkerToTask(complaintId, workerId, workerName) {
+    const adminUsername = localStorage.getItem("adminUsername");
+
+    try {
+        const res = await fetch(`${API_URL}/${complaintId}/assign`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                workerId,
+                workerName,
+                assignedBy: adminUsername || "Admin"
+            })
+        });
+
+        if (!res.ok) {
+            const error = await res.json();
+            alert(error.message || "Assignment failed");
+            return;
+        }
+
+        alert(`✅ Task assigned to ${workerName}`);
+        loadAdminComplaints();
+    } catch (err) {
+        console.error(err);
+        alert("Failed to assign task");
+    }
+}
+
+async function unassignWorker(complaintId) {
+    if (!confirm("Are you sure you want to unassign this task?")) {
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_URL}/${complaintId}/unassign`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" }
+        });
+
+        if (!res.ok) {
+            alert("Failed to unassign task");
+            return;
+        }
+
+        alert("✅ Task unassigned successfully");
+        loadAdminComplaints();
+    } catch (err) {
+        console.error(err);
+        alert("Failed to unassign task");
+    }
+}

@@ -27,10 +27,16 @@
 // // });
 
 
-require('dotenv').config();
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import dotenv from "dotenv";
+import complaintRoutes from "./routes/complaintRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import workerRoutes from "./routes/workerRoutes.js";
+
+dotenv.config();
 
 const app = express();
 
@@ -38,15 +44,27 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// 🔥 ADD THIS TEST ROUTE HERE
+app.get("/", (req, res) => {
+  res.send("Server is working");
+});
+
 // Routes
-app.use("/api/complaints", require("./routes/complaintRoutes"));
+app.use("/api/complaints", complaintRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/workers", workerRoutes);
 
-// ✅ FIX: Use process.env.MONGO_URI for Render, fallback to local for development
-const mongoURI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/complaintDB";
+// Serve uploaded images
+app.use("/uploads", express.static("uploads"));
 
-mongoose.connect(mongoURI)
-  .then(() => console.log("✅ MongoDB Connected Successfully"))
-  .catch(err => console.error("❌ MongoDB Connection Error:", err));
+// MongoDB Connection
+mongoose.connect("mongodb://127.0.0.1:27017/civicDB")
+  .then(() => console.log("✅ MongoDB connected (Local)"))
+  .catch(err => console.log("❌ DB Error:", err));
 
+// Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () =>
+  console.log(`🚀 Server running on http://localhost:${PORT}`)
+);

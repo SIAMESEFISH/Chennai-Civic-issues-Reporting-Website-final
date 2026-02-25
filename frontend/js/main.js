@@ -1,7 +1,7 @@
 // ==========================================
 // 0. CONFIGURATION
 // ==========================================
-const API_BASE_URL = "https://civicconnect-smart-complaint-reporting.onrender.com/api/complaints";
+const API_BASE_URL = "http://localhost:5000/api/complaints";
 
 // ==========================================
 // 1. GOOGLE CHARTS INITIALIZATION
@@ -60,55 +60,58 @@ async function refreshChart() {
 // ==========================================
 async function submitComplaint(e) {
     e.preventDefault();
-    
+
+    const formData = new FormData();
+    formData.append("name", document.getElementById("name").value);
+
     let selectedCategory = document.getElementById("category").value;
     if (selectedCategory === "Other") {
         selectedCategory = document.getElementById("otherCategoryInput").value;
     }
 
-    const data = {
-        name: document.getElementById("name").value,
-        category: selectedCategory,
-        area: document.getElementById("location").value,
-        latitude: document.getElementById("latitude").value,
-        longitude: document.getElementById("longitude").value,
-        description: document.getElementById("description").value
-    };
+    formData.append("category", selectedCategory);
+    formData.append("area", document.getElementById("location").value);
+    formData.append("wardNumber", document.getElementById("wardNumber").value || "");
+    formData.append("latitude", document.getElementById("latitude").value);
+    formData.append("longitude", document.getElementById("longitude").value);
+    formData.append("description", document.getElementById("description").value);
+
+    const imageFile = document.getElementById("image").files[0];
+    if (imageFile) {
+        formData.append("image", imageFile);
+    }
 
     try {
         const res = await fetch(API_BASE_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
+            body: formData
         });
 
         const result = await res.json();
         const complaintId = result.complaintId;
+        
+        // Show success message
+        alert(`✅ Complaint Registered Successfully!\n\nYour Complaint ID: ${complaintId}\n\nPlease save this ID for tracking.`);
+        
+        // Clear the form
+        document.querySelector("form").reset();
+        
+        // Reset map location
+        if (typeof initMap === 'function') {
+            initMap();
+        }
+        
+        // Reload dashboard to show new complaint
+        if (typeof loadDashboard === 'function') {
+            loadDashboard();
+        }
+        if (typeof refreshChart === 'function') {
+            refreshChart();
+        }
 
-        const card = document.querySelector('.card');
-        card.innerHTML = `
-            <div style="text-align: center; padding: 20px;">
-                <h2 style="color: #2ecc71; margin-bottom: 15px;">✔️ Complaint Registered!</h2>
-                <p style="margin-bottom: 5px; font-weight: bold;">Your Tracking ID:</p>
-                <div style="background: #f4f4f4; border: 1px dashed #ccc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <h3 id="cid" style="margin: 0; color: #333; letter-spacing: 2px;">${complaintId}</h3>
-                </div>
-                <button onclick="copyID()" class="btn btn-primary" style="margin-bottom: 10px; width: 100%;">📋 Copy ID</button>
-                <br>
-                <a href="index.html" style="text-decoration: none; color: #3498db; font-size: 0.9em;">← Submit Another Report</a>
-            </div>
-        `;
     } catch (err) {
-        console.error("Error:", err);
-        alert("❌ Submission failed. Please check your connection.");
+        alert("Submission failed: " + err.message);
     }
-}
-
-function copyID() {
-    const idText = document.getElementById("cid").innerText;
-    navigator.clipboard.writeText(idText)
-        .then(() => alert("✅ Complaint ID copied: " + idText))
-        .catch(() => alert("❌ Failed to copy ID"));
 }
 
 // ==========================================
@@ -121,16 +124,30 @@ async function loadDashboard() {
         const table = document.getElementById("dashboardTable");
         if(!table) return;
 
+        const currentUserId = localStorage.getItem("userId");
+
         table.innerHTML = ""; 
         data.forEach(c => {
+            const hasReported = currentUserId
+                && Array.isArray(c.sameIssueReports)
+                && c.sameIssueReports.some((r) => r.userId === currentUserId);
+
+            const reportButton = hasReported
+                ? "<button disabled style=\"opacity: 0.6; cursor: not-allowed;\">Reported</button>"
+                : `<button onclick="reportSameIssue('${c._id}')">Report Same Issue</button>`;
+
             table.innerHTML += `
                 <tr>
+                    <td>${c.complaintId}</td>
                     <td>${c.category}</td>
-                    <td>${c.area}</td>
+                    <td>${c.wardNumber || c.area}</td>
                     <td class="status-pending">${c.status || "Pending"}</td>
                     <td>${c.reportCount}</td>
                     <td>
-                        <button onclick="reportSameIssue('${c._id}')">Report Same Issue</button>
+                        ${c.image ? `<img src="http://localhost:5000/uploads/${c.image}" width="70" onclick="openImageModal('http://localhost:5000/uploads/${c.image}', '${c.category} - ${c.area}')" title="Click to view full size">` : "No Image"}
+                    </td>
+                    <td>
+                        ${reportButton}
                     </td>
                 </tr>
             `;
@@ -140,22 +157,66 @@ async function loadDashboard() {
 
 async function trackComplaint() {
     const id = document.getElementById("trackId").value;
-    if (!id) return alert("Please enter Complaint ID");
+    if (!id) {
+        alert("Please enter Complaint ID");
+        return;
+    }
 
     try {
         const res = await fetch(`${API_BASE_URL}/track/${id}`);
         if (!res.ok) throw new Error("Invalid ID");
         const data = await res.json();
-        document.getElementById("result").innerText = `Status: ${data.status}`;
+
+        const resultDiv = document.getElementById("result");
+        const category = data.category ;
+        const area = data.area ;
+
+        resultDiv.style.display = "block";
+        resultDiv.style.background = "";
+        resultDiv.style.color = "";
+        resultDiv.innerHTML = `
+            <strong>Complaint Status:</strong><br>
+            Status: <strong>${data.status || "Pending"}</strong><br>
+            Reports: ${data.reportCount || 1}
+        `;
     } catch {
-        alert("Invalid Complaint ID");
+        const resultDiv = document.getElementById("result");
+        resultDiv.style.display = "block";
+        resultDiv.style.background = "#fee2e2";
+        resultDiv.style.color = "#dc2626";
+        resultDiv.innerHTML = "❌ Invalid Complaint ID. Please check and try again.";
     }
 }
 
 async function reportSameIssue(id) {
-    await fetch(`${API_BASE_URL}/report-same/${id}`, { method: "PUT" });
-    loadDashboard(); 
-    refreshChart(); 
+    const userId = localStorage.getItem("userId");
+    const userName = localStorage.getItem("userName") || "Unknown";
+    const userEmail = localStorage.getItem("userEmail") || "";
+
+    if (!userId) {
+        alert("Please login to report the same issue.");
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/report-same/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId, name: userName, email: userEmail })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            alert(data.message || "Unable to report the same issue.");
+            return;
+        }
+
+        loadDashboard(); 
+        refreshChart(); 
+    } catch (err) {
+        alert("Failed to report the same issue.");
+    }
 }
 
 // ==========================================
@@ -179,6 +240,19 @@ document.addEventListener("DOMContentLoaded", () => {
 let map, marker;
 
 function initMap() {
+    const mapContainer = document.getElementById('map');
+    if (!mapContainer) return;
+
+    if (map) {
+        map.off();
+        map.remove();
+        map = null;
+    }
+
+    if (mapContainer._leaflet_id) {
+        mapContainer._leaflet_id = null;
+    }
+
     const defaultLat = 18.5204; // Pune Coordinates
     const defaultLng = 73.8567;
 
@@ -233,3 +307,60 @@ function toggleOtherCategory() {
     otherInput.style.display = isOther ? "block" : "none";
     otherInput.required = isOther;
 }
+
+
+
+function getUserLocation() {
+    if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser.");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+
+            map.setView([lat, lng], 16);
+            marker.setLatLng([lat, lng]);
+
+            getAddress(lat, lng); // existing reverse geocode function
+        },
+        () => {
+            alert("Unable to retrieve your location.");
+        }
+    );
+}
+
+// ==========================================
+// 5. IMAGE MODAL FUNCTIONS
+// ==========================================
+function openImageModal(imageSrc, captionText) {
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const caption = document.getElementById('caption');
+    
+    modal.style.display = 'block';
+    modalImg.src = imageSrc;
+    caption.innerHTML = captionText || 'Complaint Image';
+    
+    // Close modal when clicking outside the image
+    modal.onclick = function(event) {
+        if (event.target === modal) {
+            closeImageModal();
+        }
+    }
+    
+    // Close modal with Escape key
+    document.onkeydown = function(event) {
+        if (event.key === 'Escape') {
+            closeImageModal();
+        }
+    }
+}
+
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    modal.style.display = 'none';
+}
+
