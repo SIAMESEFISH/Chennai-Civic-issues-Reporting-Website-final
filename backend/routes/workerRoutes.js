@@ -1,8 +1,24 @@
 import express from "express";
 import Worker from "../models/Worker.js";
 import Complaint from "../models/Complaint.js";
+import multer from "multer";
+import path from "path";
 
 const router = express.Router();
+
+// ================================
+// MULTER CONFIGURATION (WORKER UPLOADS)
+// ================================
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage });
 
 // ================================
 // ADMIN: CREATE WORKER (Registration)
@@ -164,7 +180,7 @@ router.put("/:workerId", async (req, res) => {
 // ================================
 // WORKER: UPDATE TASK PROGRESS
 // ================================
-router.put("/tasks/:complaintId/progress", async (req, res) => {
+router.put("/tasks/:complaintId/progress", upload.single("resolvedImage"), async (req, res) => {
   try {
     const { complaintId } = req.params;
     const { workerId, status, workerNotes } = req.body;
@@ -190,7 +206,22 @@ router.put("/tasks/:complaintId/progress", async (req, res) => {
     }
 
     if (status === "Resolved") {
+      if (!req.file && !complaint.workProgress?.resolvedImage) {
+        return res.status(400).json({ message: "Resolved photo is required before completing the task" });
+      }
+
       complaint.workProgress.completedAt = new Date();
+      if (req.file) {
+        complaint.workProgress.resolvedImage = req.file.filename;
+        complaint.workProgress.resolvedImageUploadedAt = new Date();
+      }
+      complaint.workProgress.userVerification = {
+        verified: false,
+        verifiedAt: null,
+        verifiedByUserId: "",
+        verifiedByName: "",
+        note: ""
+      };
       worker.tasksCompleted += 1;
       worker.tasksInProgress = Math.max(0, worker.tasksInProgress - 1);
       await worker.save();

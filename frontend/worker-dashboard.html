@@ -251,6 +251,54 @@
             color: #e6e6e6;
         }
 
+        .proof-upload {
+            margin-top: 15px;
+            padding: 15px;
+            background: #ecfdf5;
+            border-left: 4px solid #16a34a;
+            border-radius: 8px;
+        }
+
+        body.dark .proof-upload {
+            background: #064e3b;
+            border-left-color: #34d399;
+        }
+
+        .proof-upload label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #065f46;
+        }
+
+        body.dark .proof-upload label {
+            color: #a7f3d0;
+        }
+
+        .proof-upload input[type="file"] {
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .proof-upload small {
+            color: #065f46;
+            display: block;
+        }
+
+        body.dark .proof-upload small {
+            color: #a7f3d0;
+        }
+
+        .proof-preview {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #065f46;
+        }
+
+        body.dark .proof-preview {
+            color: #a7f3d0;
+        }
+
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -514,8 +562,14 @@
                         ` : ''}
                         
                         ${task.status === "In Progress" ? `
+                            <div class="proof-upload">
+                                <label for="resolvedImage-${task.complaintId}">Upload Resolved Problem Photo</label>
+                                <input type="file" id="resolvedImage-${task.complaintId}" accept="image/*" onchange="previewResolvedPhoto('${task.complaintId}')">
+                                <small>This proof image will be shared with admin and users for verification.</small>
+                                <div class="proof-preview" id="proofPreview-${task.complaintId}"></div>
+                            </div>
                             <button class="btn-complete" onclick="showNotesDialog('${task.complaintId}')">
-                                ✅ Mark Complete
+                                ✅ Upload & Mark Complete
                             </button>
                         ` : ''}
 
@@ -531,6 +585,15 @@
                             <strong>📝 Work Notes:</strong>
                             <div style="margin-top: 8px; color: #374151;">
                                 ${task.workProgress?.workerNotes || 'No notes added yet'}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${task.workProgress?.resolvedImage ? `
+                        <div style="margin-top: 12px;">
+                            <strong style="font-size: 14px; color: #16a34a;">📷 Uploaded Resolved Proof</strong>
+                            <div style="margin-top: 8px;">
+                                <img src="http://localhost:5000/uploads/${task.workProgress.resolvedImage}" style="max-width: 100%; max-height: 220px; border-radius: 8px; border: 2px solid #bbf7d0;" alt="Resolved Proof Image">
                             </div>
                         </div>
                     ` : ''}
@@ -571,18 +634,39 @@
         }
     }
 
+    function previewResolvedPhoto(complaintId) {
+        const input = document.getElementById(`resolvedImage-${complaintId}`);
+        const preview = document.getElementById(`proofPreview-${complaintId}`);
+
+        if (!input || !preview) return;
+
+        if (input.files && input.files[0]) {
+            preview.textContent = `Selected: ${input.files[0].name}`;
+        } else {
+            preview.textContent = "";
+        }
+    }
+
     async function completeTask(complaintId, workerNotes) {
         const workerId = localStorage.getItem("workerId");
+        const imageInput = document.getElementById(`resolvedImage-${complaintId}`);
+        const resolvedFile = imageInput?.files?.[0];
+
+        if (!resolvedFile) {
+            alert("Please upload a resolved problem photo before marking this task as complete.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("workerId", workerId);
+        formData.append("status", "Resolved");
+        formData.append("workerNotes", workerNotes || "");
+        formData.append("resolvedImage", resolvedFile);
         
         try {
             const res = await fetch(`http://localhost:5000/api/workers/tasks/${complaintId}/progress`, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    workerId, 
-                    status: "Resolved",
-                    workerNotes: workerNotes || ""
-                })
+                body: formData
             });
 
             if (!res.ok) {
@@ -592,7 +676,7 @@
             }
 
             const result = await res.json();
-            alert("✅ Task completed successfully!\n\nThe admin dashboard will show:\n- Completion time\n- Your notes\n- Updated status\n\nGreat work!");
+            alert("✅ Task completed successfully with proof photo!\n\nThe admin and users can now verify the resolved image.");
             loadTasks();
         } catch (err) {
             console.error(err);

@@ -231,6 +231,25 @@
 
 <!-- TAB 1: View Dashboard -->
 <div id="view-dashboard" class="tab-content active">
+    <div class="dashboard-section" id="my-complaints">
+        <h2>My Complaints</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Complaint Id</th>
+                    <th>Category</th>
+                    <th>Reported Area</th>
+                    <th>Status</th>
+                    <th>Submitted On</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="myComplaintsTable">
+                <!-- MY COMPLAINTS DATA WILL COME FROM JS -->
+            </tbody>
+        </table>
+    </div>
+
     <div class="dashboard-section">
         <h2>Community Complaint Dashboard</h2>
         <table>
@@ -239,9 +258,12 @@
                     <th>Complaint Id</th>
                     <th>Category</th>
                     <th>Ward Number</th>
+                    <th>Reported Area</th>
                     <th>Status</th>
                     <th>Reports</th>
                     <th>Image</th>
+                    <th>Resolved Proof</th>
+                    <th>Verification</th>
                     <th>Action</th>
                 </tr>
             </thead>

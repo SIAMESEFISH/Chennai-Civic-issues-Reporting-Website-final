@@ -35,6 +35,8 @@ async function loadAdminComplaints() {
             const workStarted = c.workProgress?.startedAt;
             const workCompleted = c.workProgress?.completedAt;
             const workerNotes = c.workProgress?.workerNotes;
+            const resolvedImage = c.workProgress?.resolvedImage;
+            const userVerification = c.workProgress?.userVerification;
             
             // Build worker info display with progress
             let workerDisplay = `<strong style="color: ${isAssigned ? '#16a34a' : '#6b7280'};">${assignedWorker}</strong>`;
@@ -49,6 +51,22 @@ async function loadAdminComplaints() {
                 workerDisplay += `<div style="font-size: 11px; color: #6b7280; margin-top: 4px;">📝 ${workerNotes.substring(0, 50)}${workerNotes.length > 50 ? '...' : ''}</div>`;
             }
 
+            const resolvedProofDisplay = resolvedImage
+                ? `<img src="http://localhost:5000/uploads/${resolvedImage}" width="80" onclick="openImageModal('http://localhost:5000/uploads/${resolvedImage}', 'Resolved proof - ${c.complaintId}')" title="Click to view resolved proof">`
+                : '<span style="color: #6b7280; font-size: 12px;">Not uploaded</span>';
+
+            let userVerificationDisplay = '<span style="color: #6b7280; font-size: 12px;">Not verified</span>';
+            if (userVerification?.verified) {
+                const verifiedAt = userVerification.verifiedAt
+                    ? new Date(userVerification.verifiedAt).toLocaleString()
+                    : 'Verified';
+                userVerificationDisplay = `
+                    <span style="color: #16a34a; font-weight: 600; font-size: 12px;">✅ Verified</span>
+                    <div style="font-size: 11px; color: #6b7280;">By: ${userVerification.verifiedByName || 'User'}</div>
+                    <div style="font-size: 11px; color: #6b7280;">At: ${verifiedAt}</div>
+                `;
+            }
+
             table.innerHTML += `
                 <tr>
                     <td>${c.complaintId}</td>
@@ -58,6 +76,7 @@ async function loadAdminComplaints() {
                     </td>
                     <td>${c.category}</td>
                     <td>${c.wardNumber || c.area}</td>
+                    <td>${c.area || "Not provided"}</td>
                     <td><span class="status-badge ${c.status.toLowerCase()}">${c.status}</span></td>
                     <td>
                         <div style="display: flex; flex-direction: column; gap: 5px;">
@@ -77,6 +96,8 @@ async function loadAdminComplaints() {
                             ` : ''}
                         </div>
                     </td>
+                    <td>${resolvedProofDisplay}</td>
+                    <td>${userVerificationDisplay}</td>
                     <td>
                         ${reportersCount > 0
                             ? `<button class="btn-view" data-reporters="${reportersData}" onclick="showReporters(this)">View (${reportersCount})</button>`

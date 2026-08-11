@@ -1,6 +1,17 @@
 # CHENNAI CIVIC ISSUES REPORTING SYSTEM
 ## Project Report: Phase I & Phase II Guidelines
 
+## Abstract
+Rapid urbanization in Chennai has increased the frequency and complexity of civic issues such as potholes, water leakage, streetlight faults, waste overflow, and public infrastructure damage. Although citizens are willing to report these problems, existing complaint channels are often fragmented, slow, and non-transparent, resulting in delayed resolution and reduced trust in local governance. This project proposes and develops a web-based Chennai Civic Issues Reporting System to provide a centralized, role-driven, and trackable platform for complaint registration, assignment, monitoring, and closure. The system is designed to connect three primary stakeholders—citizens, field workers, and administrators—through an integrated workflow that improves accountability and service responsiveness.
+
+The proposed solution follows a full-stack architecture with a lightweight frontend (HTML, CSS, JavaScript) and a Node.js/Express backend using modular route and model layers. The core functional modules include user authentication, complaint submission with location and image support, complaint lifecycle tracking, worker assignment, and administrative analytics. A role-based access control mechanism is implemented to ensure secure and relevant access for each user category. Citizens can submit and track complaints in real time, workers can update progress and resolution evidence, and administrators can monitor ward-wise trends and resource allocation through dashboards and heatmap-oriented visualization modules.
+
+From a design perspective, the system emphasizes scalability, maintainability, and usability. The data model is structured around Users, Complaints, Workers, and Admin entities, enabling clear relationships between complaint origin, assignment, and closure. The API layer is designed with REST principles to support modular expansion in future phases, including notification services, mobile clients, and external municipal integrations. The interface design prioritizes simplicity and accessibility to support diverse user groups, including first-time digital users.
+
+The expected outcomes of this work include faster complaint registration, improved resolution tracking, reduced administrative overhead, and stronger citizen-government engagement. By enabling ward-level visibility of repeated issues, the platform also supports data-driven planning and preventive maintenance strategies. Beyond immediate operational benefits, the system contributes to broader e-governance goals by promoting transparency, responsiveness, and participatory civic management.
+
+Overall, this project demonstrates how a practical, low-cost digital platform can modernize municipal grievance handling in a large city context. The Phase I report focuses on problem identification, requirement analysis, architecture design, and implementation planning, while Phase II extends the work to full implementation, testing, performance evaluation, and comparative analysis. The project establishes a strong foundation for future enhancements such as AI-assisted issue categorization, multilingual support, push notifications, and predictive analytics for proactive urban governance.
+
 ---
 
 # PHASE I REPORT
@@ -646,70 +657,447 @@ Based on testing with 50+ pilot users:
 
 ### 5.4 Future Enhancements (Phase III & Beyond)
 
-#### 5.4.1 Short-term (3-6 months)
-1. **Mobile Application**
-   - Native iOS/Android apps using React Native
-   - Offline complaint submission capability
-   - Push notifications
-   - Camera integration for instant photo uploads
+The Chennai Civic Issues Reporting System has been designed with a modular, extensible architecture that facilitates seamless integration of advanced features. This section outlines a comprehensive roadmap for future enhancements across three implementation phases, each with detailed technical specifications, implementation strategies, resource requirements, and expected outcomes.
 
-2. **Notification System**
-   - Email alerts for complaint status changes
-   - SMS updates for workers
-   - Deadline reminders for pending tasks
-   - Weekly digest for citizens
+---
 
-3. **Advanced Analytics**
-   - Predictive analytics for complaint hotspots
-   - Machine learning-based priority assignment
-   - Automated worker allocation algorithm
-   - Seasonal trend analysis
+#### 5.4.1 Short-term Enhancements (3-6 months)
 
-#### 5.4.2 Medium-term (6-12 months)
-1. **Integration with Government Systems**
-   - API integration with municipal databases
-   - Budget allocation based on complaint density
-   - Integration with UIDS (Unique Identification System)
+**1. Mobile Application Development**
 
-2. **Chatbot Assistant**
-   - AI-powered complaint classification
-   - Automated FAQ responses
-   - Multi-language support (Tamil, English, etc.)
-   - Natural language processing for better categorization
+*Technical Specifications:*
+- **Platform**: React Native for cross-platform development (iOS 13+ and Android 8.0+)
+- **Features**:
+  - Offline-first architecture with local SQLite storage
+  - Background sync when network connectivity is restored
+  - GPS-based automatic location detection
+  - In-app camera with image compression (max 2MB per photo)
+  - Push notifications via Firebase Cloud Messaging (FCM)
+  - Biometric authentication (fingerprint/face recognition)
+  - QR code scanner for rapid complaint tracking
 
-3. **Payment & Vendor Management**
-   - Integration with contractor management system
-   - Payment tracking for resolved complaints
-   - Performance-based compensation
+*Implementation Strategy:*
+- Sprint 1-2: Core UI components and navigation structure
+- Sprint 3-4: API integration and offline data synchronization
+- Sprint 5-6: Camera, GPS, and notification modules
+- Sprint 7-8: Beta testing, bug fixes, and Play Store/App Store deployment
 
-4. **Blockchain Integration**
-   - Immutable complaint records
-   - Transparent audit trail
-   - Smart contracts for SLA enforcement
+*Expected Outcomes:*
+- 60% increase in complaint submissions
+- 45% reduction in submission time (from 2 minutes to 1.1 minutes)
+- Enhanced accessibility for non-desktop users
+- 80% user adoption within 6 months post-launch
 
-#### 5.4.3 Long-term (12+ months)
-1. **AI/ML Enhancement**
-   - Complaint route optimization for workers
-   - Predictive maintenance planning
-   - Automated service quality monitoring
-   - Sentiment analysis on citizen feedback
+*Resource Requirements:*
+- 2 React Native developers (6 months)
+- 1 UI/UX designer (3 months)
+- Testing devices and cloud services
+- **Estimated Cost**: ₹8-12 lakhs
 
-2. **IoT Integration**
-   - Smart sensors for continuous monitoring
-   - Automatic complaint generation for infrastructure issues
-   - Real-time environmental data collection
+---
 
-3. **Expansion to Other Services**
-   - License/permit applications
-   - Building complaint management
-   - Public health reporting
-   - Traffic and transportation issues
+**2. Comprehensive Notification System**
 
-4. **Citizen Engagement Platform**
-   - Community discussion forums
-   - Citizen voting on issue priorities
-   - Gamification (badges, leaderboards)
-   - Volunteer coordination system
+*Technical Specifications:*
+- **Email Service**: SendGrid API or AWS SES
+- **SMS Gateway**: Twilio or MSG91 for bulk SMS
+- **Push Notifications**: Firebase Cloud Messaging
+- **Notification Types**:
+  - Real-time alerts for status changes
+  - Scheduled reminders for pending tasks
+  - Daily digests for admins (complaint summary)
+  - Weekly citizen reports (resolved complaints in area)
+  - Escalation alerts for overdue complaints
+
+*Implementation Strategy:*
+- Message queue system using RabbitMQ or AWS SQS
+- Template-based notification engine with dynamic content
+- User preference management (opt-in/opt-out controls)
+- Multi-channel delivery with fallback mechanisms
+- Notification analytics dashboard
+
+*Expected Outcomes:*
+- 95% notification delivery rate
+- 40% improvement in complaint resolution time due to timely alerts
+- Enhanced user engagement and satisfaction
+- Reduced manual follow-up workload by 70%
+
+*Resource Requirements:*
+- 1 backend developer (3 months)
+- Cloud messaging service subscriptions
+- **Estimated Cost**: ₹3-5 lakhs annually (includes service fees)
+
+---
+
+**3. Advanced Analytics & Predictive Intelligence**
+
+*Technical Specifications:*
+- **Machine Learning Models**:
+  - Complaint priority prediction using Random Forest/XGBoost
+  - Hotspot identification with clustering algorithms (K-means, DBSCAN)
+  - Time-series forecasting for seasonal trend analysis (ARIMA, Prophet)
+  - Worker allocation optimization using constraint programming
+  
+- **Data Processing**:
+  - Apache Spark for large-scale data processing
+  - Python (scikit-learn, TensorFlow) for model training
+  - Real-time prediction API using Flask/FastAPI
+
+*Features*:
+- Automated complaint categorization (95% accuracy target)
+- Predictive heatmaps showing future complaint hotspots
+- Optimal worker routing based on location and workload
+- Seasonal pattern analysis (monsoon-related complaints, festival impacts)
+- Performance forecasting and resource planning
+
+*Implementation Strategy:*
+- Phase 1: Data collection and historical analysis (1 month)
+- Phase 2: Model development and training (2 months)
+- Phase 3: Integration with existing system (1 month)
+- Phase 4: Continuous monitoring and model refinement (ongoing)
+
+*Expected Outcomes:*
+- 30% reduction in average complaint resolution time
+- 25% improvement in worker efficiency through optimal routing
+- Proactive resource allocation reducing emergency response needs
+- Data-driven budget planning for infrastructure improvements
+
+*Resource Requirements:*
+- 1 Data Scientist/ML Engineer (4 months)
+- 1 Backend Integration Developer (2 months)
+- Cloud computing resources (AWS SageMaker or Google AI Platform)
+- **Estimated Cost**: ₹10-15 lakhs
+
+---
+
+**4. Progressive Web App (PWA) Optimization**
+
+*Technical Specifications:*
+- Service worker implementation for offline functionality
+- App shell architecture for instant loading
+- Web manifest for "Add to Home Screen" capability
+- Background sync for pending actions
+- Cache-first strategy for static assets
+
+*Expected Outcomes:*
+- 50% faster load times (target: <1 second)
+- Full offline capability for complaint viewing
+- App-like experience without installation overhead
+- 90+ Lighthouse performance score
+
+*Resource Requirements:*
+- 1 Frontend developer (2 months)
+- **Estimated Cost**: ₹2-4 lakhs
+
+---
+
+#### 5.4.2 Medium-term Enhancements (6-12 months)
+
+**1. Government Systems Integration**
+
+*Technical Specifications:*
+- **Integration Points**:
+  - Chennai Corporation Municipal Database (property records, ward boundaries)
+  - India Urban Data Exchange (IUDX) for open data sharing
+  - National e-Governance Plan (NeGP) compliance
+  - Aadhaar-based authentication (optional verification)
+  - DigiLocker integration for document verification
+  - GSTN integration for vendor payment tracking
+
+*API Architecture*:
+- RESTful APIs with OAuth 2.0 authentication
+- Rate limiting and request throttling
+- Data encryption in transit (TLS 1.3) and at rest (AES-256)
+- Comprehensive audit logging for government compliance
+
+*Implementation Strategy:*
+- Legal and compliance review (1 month)
+- API development and security hardening (3 months)
+- Pilot integration with one municipal system (2 months)
+- Full deployment and monitoring (2 months)
+
+*Expected Outcomes:*
+- Elimination of data duplication
+- Automated budget allocation based on ward-wise complaint density
+- Enhanced citizen verification reducing fraudulent complaints
+- Seamless data sharing with urban planning departments
+
+*Resource Requirements:*
+- 2 Backend developers (6 months)
+- 1 Security specialist (3 months)
+- Legal and compliance consultant
+- **Estimated Cost**: ₹15-22 lakhs
+
+---
+
+**2. AI-Powered Chatbot Assistant**
+
+*Technical Specifications:*
+- **Natural Language Processing**: Google Dialogflow or Microsoft LUIS
+- **Multilingual Support**: Tamil, English, Hindi, Telugu (expandable)
+- **Capabilities**:
+  - Complaint filing assistance through conversational interface
+  - Automated complaint status inquiries
+  - FAQ handling (common questions about procedures)
+  - Intelligent routing to human agents for complex queries
+  - Voice input support (speech-to-text)
+
+*Training Data*:
+- Historical complaint data (anonymized)
+- Common citizen queries and responses
+- Government policy documents and guidelines
+- Continuous learning from user interactions
+
+*Implementation Strategy:*
+- Intent identification and entity mapping (2 months)
+- Training dataset preparation (1 month)
+- Chatbot development and integration (3 months)
+- User acceptance testing and refinement (2 months)
+
+*Expected Outcomes:*
+- 70% query resolution without human intervention
+- 24/7 automated support reducing helpline load
+- 50% faster complaint filing for first-time users
+- Increased accessibility for non-tech-savvy citizens
+
+*Resource Requirements:*
+- 1 AI/ML Engineer (5 months)
+- 1 Frontend developer for UI integration (2 months)
+- Chatbot platform subscription
+- **Estimated Cost**: ₹8-12 lakhs
+
+---
+
+**3. Payment & Vendor Management Module**
+
+*Technical Specifications:*
+- Contractor database with performance ratings
+- Work order generation and tracking
+- Payment milestone tracking
+- Invoice management and approval workflow
+- Integration with municipal accounting systems
+- Performance-based compensation calculations
+- Vendor bidding platform for large projects
+
+*Features*:
+- Automated payment release upon complaint closure verification
+- Penalty calculations for SLA violations
+- Vendor performance dashboards
+- Budget utilization reports
+- E-procurement integration
+
+*Expected Outcomes:*
+- 60% reduction in payment processing time
+- Transparent vendor performance tracking
+- Improved accountability and reduced corruption
+- Better budget management and forecasting
+
+*Resource Requirements:*
+- 2 Full-stack developers (6 months)
+- 1 Business analyst (3 months)
+- **Estimated Cost**: ₹12-18 lakhs
+
+---
+
+**4. Blockchain-Based Audit Trail**
+
+*Technical Specifications:*
+- **Platform**: Hyperledger Fabric or Ethereum private network
+- **Use Cases**:
+  - Immutable complaint records
+  - Transparent status change logging
+  - Smart contracts for SLA enforcement
+  - Automated escalations and notifications
+  - Tamper-proof citizen feedback
+
+*Implementation Strategy*:
+- Blockchain network setup (2 months)
+- Smart contract development (3 months)
+- Integration with existing database (2 months)
+- Security audit and testing (1 month)
+
+*Expected Outcomes:*
+- 100% transparency and accountability
+- Elimination of data tampering and manipulation
+- Automated SLA enforcement and penalties
+- Enhanced citizen trust in the system
+
+*Resource Requirements:*
+- 1 Blockchain developer (6 months)
+- Cloud infrastructure for blockchain nodes
+- **Estimated Cost**: ₹10-16 lakhs
+
+---
+
+#### 5.4.3 Long-term Enhancements (12+ months)
+
+**1. AI/ML Advanced Intelligence Suite**
+
+*Complaint Route Optimization*:
+- Traveling Salesman Problem (TSP) algorithms for worker routing
+- Dynamic rerouting based on real-time traffic and priority changes
+- Multi-objective optimization (time, cost, urgency)
+- Integration with Google Maps Routes API
+
+*Predictive Maintenance Planning*:
+- Historical data analysis to identify recurring failure points
+- Predictive models for infrastructure lifespan estimation
+- Preventive maintenance scheduling
+- Cost-benefit analysis for proactive interventions
+
+*Automated Quality Monitoring*:
+- Computer vision for resolution photo verification
+- Before/after image comparison with similarity scoring
+- Automated quality scoring and re-inspection triggers
+- Citizen feedback sentiment analysis
+
+*Sentiment Analysis Engine*:
+- NLP-based feedback analysis
+- Emotion detection in complaint descriptions
+- Worker performance sentiment tracking
+- Public satisfaction trend monitoring
+
+*Expected Outcomes:*
+- 50% reduction in repeat complaints through predictive maintenance
+- 35% improvement in worker productivity
+- 90% automated quality verification accuracy
+- Real-time public sentiment insights for policy makers
+
+*Resource Requirements:*
+- 2 ML Engineers (12 months)
+- Cloud GPU resources for model training
+- **Estimated Cost**: ₹20-30 lakhs
+
+---
+
+**2. IoT Integration & Smart City Infrastructure**
+
+*Technical Specifications:*
+- **IoT Sensors**:
+  - Pothole detection sensors (accelerometer-based)
+  - Waste bin level monitors (ultrasonic sensors)
+  - Streetlight failure detection (connected luminaires)
+  - Water pipeline pressure and leak sensors
+  - Air quality monitoring stations
+
+*Architecture*:
+- MQTT protocol for lightweight device communication
+- Edge computing for real-time data processing
+- Time-series database (InfluxDB) for sensor data
+- Real-time dashboards and alerting
+
+*Automatic Complaint Generation*:
+- Threshold-based automatic complaint creation
+- Priority assignment based on severity
+- Geolocation tagging from sensor coordinates
+- Integration with existing complaint workflow
+
+*Expected Outcomes:*
+- 80% faster issue detection before citizen complaints
+- Proactive infrastructure monitoring
+- 65% reduction in infrastructure downtime
+- Data-driven urban planning
+
+*Resource Requirements:*
+- IoT infrastructure deployment
+- 2 IoT/Embedded Systems Engineers (12 months)
+- Network connectivity (LoRaWAN or NB-IoT)
+- **Estimated Cost**: ₹50-80 lakhs (includes hardware)
+
+---
+
+**3. Multi-Service E-Governance Platform**
+
+*Expansion Modules*:
+- **Licensing & Permits**: Building permits, trade licenses, NOCs
+- **Property Tax Management**: Payment, assessment, grievances
+- **Birth/Death Certificates**: Online applications and tracking
+- **Public Health Reporting**: Disease surveillance, sanitation complaints
+- **Traffic Management**: Signal failures, congestion reports, parking
+- **Environmental Services**: Tree cutting permissions, pollution complaints
+
+*Unified Citizen Portal*:
+- Single sign-on for all government services
+- Integrated dashboard with all user interactions
+- Cross-department workflow automation
+- Unified payment gateway
+- Document management system
+
+*Expected Outcomes:*
+- One-stop solution for all civic needs
+- 70% reduction in physical visits to municipal offices
+- Enhanced inter-department coordination
+- Comprehensive citizen engagement
+
+*Resource Requirements:*
+- 5 Full-stack developers (18 months)
+- 1 Project Manager (18 months)
+- Domain experts for each service area
+- **Estimated Cost**: ₹40-60 lakhs
+
+---
+
+**4. Citizen Engagement & Gamification Platform**
+
+*Community Features*:
+- **Discussion Forums**:
+  - Ward-wise community boards
+  - Issue-specific discussion threads
+  - Expert moderation and fact-checking
+  - Anonymous posting option
+
+- **Civic Participation**:
+  - Citizen voting on priority issues
+  - Budget allocation preferences
+  - Volunteer task signup (community clean-up drives)
+  - Participatory budgeting initiatives
+
+- **Gamification Elements**:
+  - Points system for complaint filing and community participation
+  - Achievement badges (Active Citizen, Problem Solver, etc.)
+  - Ward-wise and city-wide leaderboards
+  - Quarterly rewards for top contributors
+  - Social sharing integration
+
+*Reputation System*:
+- Verified complaint history
+- Contribution scoring
+- Trust ratings based on valuable reports
+- Penalties for spam or false complaints
+
+*Expected Outcomes:*
+- 3x increase in civic participation
+- Stronger community ownership of local issues
+- Enhanced local governance transparency
+- Improved citizen-government collaboration
+
+*Resource Requirements:*
+- 2 Full-stack developers (10 months)
+- 1 Community manager (ongoing)
+- 1 UI/UX designer (4 months)
+- **Estimated Cost**: ₹15-25 lakhs
+
+---
+
+**5.4.4 Summary of Investment & ROI**
+
+| Phase | Timeline | Estimated Cost | Expected ROI |
+|-------|----------|---------------|--------------|
+| Short-term | 3-6 months | ₹23-36 lakhs | 40% efficiency gain, 60% user growth |
+| Medium-term | 6-12 months | ₹45-68 lakhs | 50% cost reduction, complete transparency |
+| Long-term | 12+ months | ₹125-195 lakhs | Smart city foundation, 3x civic engagement |
+| **Total** | **24 months** | **₹193-299 lakhs** | **Comprehensive digital transformation** |
+
+**Strategic Priorities**:
+1. **Phase 1**: Mobile app and notifications (immediate user impact)
+2. **Phase 2**: Analytics and government integration (operational efficiency)
+3. **Phase 3**: IoT and AI/ML (smart city transformation)
+
+**Risk Mitigation**:
+- Incremental deployment with pilot testing
+- User feedback loops at each stage
+- Budget allocation in phases based on performance
+- Fallback mechanisms for critical features
 
 ### 5.5 Sustainability & Maintenance
 - **Update Cycle**: Quarterly feature releases
@@ -760,6 +1148,299 @@ The Chennai Civic Issues Reporting System successfully addresses the critical ne
 5. Node.js Foundation. (2024). "Best Practices for Scalable Server Design."
 
 6. MongoDB Inc. (2023). "Database Optimization for Geospatial Queries."
+
+---
+
+## Appendix C – Main Sample Code (Core Modules)
+
+The following code excerpts represent the key implementation modules used in the Chennai Civic Issues Reporting System. These snippets are selected from the project source and included for technical reference.
+
+### C.1 Backend Server Entry (`backend/server.js`)
+
+```js
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import dotenv from "dotenv";
+import complaintRoutes from "./routes/complaintRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import workerRoutes from "./routes/workerRoutes.js";
+
+dotenv.config();
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Health check
+app.get("/", (req, res) => {
+  res.send("Server is working");
+});
+
+// API routes
+app.use("/api/complaints", complaintRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/workers", workerRoutes);
+
+// Static uploads
+app.use("/uploads", express.static("uploads"));
+
+// Database connection
+mongoose.connect("mongodb://127.0.0.1:27017/civicDB")
+  .then(() => console.log("MongoDB connected (Local)"))
+  .catch(err => console.log("DB Error:", err));
+
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
+```
+
+### C.2 Complaint Routes (`backend/routes/complaintRoutes.js`)
+
+```js
+import express from "express";
+import Complaint from "../models/Complaint.js";
+import multer from "multer";
+import path from "path";
+
+const router = express.Router();
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage });
+
+function generateComplaintId() {
+  return "CC-" + Math.floor(100000 + Math.random() * 900000);
+}
+
+// Create complaint with image
+router.post("/", upload.single("image"), async (req, res) => {
+  try {
+    const complaint = new Complaint({
+      complaintId: generateComplaintId(),
+      name: req.body.name,
+      category: req.body.category,
+      area: req.body.area,
+      wardNumber: req.body.wardNumber || "",
+      latitude: req.body.latitude || "",
+      longitude: req.body.longitude || "",
+      description: req.body.description,
+      image: req.file ? req.file.filename : ""
+    });
+
+    await complaint.save();
+    res.json({ complaintId: complaint.complaintId });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get all complaints
+router.get("/", async (req, res) => {
+  try {
+    const complaints = await Complaint.find().sort({ createdAt: -1 });
+    res.json(complaints);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Track complaint by complaintId
+router.get("/track/:complaintId", async (req, res) => {
+  try {
+    const complaint = await Complaint.findOne({
+      complaintId: req.params.complaintId
+    });
+
+    if (!complaint) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    res.json({
+      status: complaint.status,
+      category: complaint.category,
+      area: complaint.area,
+      wardNumber: complaint.wardNumber,
+      reportCount: complaint.reportCount,
+      complaintId: complaint.complaintId
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update complaint status
+router.put("/:id", async (req, res) => {
+  try {
+    const updated = await Complaint.findByIdAndUpdate(
+      req.params.id,
+      { status: req.body.status },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+
+    res.json({ status: updated.status });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+export default router;
+```
+
+### C.3 Complaint Model (`backend/models/Complaint.js`)
+
+```js
+import mongoose from "mongoose";
+
+const complaintSchema = new mongoose.Schema({
+  complaintId: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
+  category: { type: String, required: true },
+  area: { type: String, required: true },
+  wardNumber: { type: String, default: "" },
+  latitude: { type: String },
+  longitude: { type: String },
+  description: { type: String, required: true },
+  image: { type: String },
+  status: { type: String, default: "Pending" },
+  reportCount: { type: Number, default: 1 },
+  sameIssueReports: {
+    type: [
+      {
+        userId: { type: String, required: true },
+        name: { type: String, required: true },
+        email: { type: String, default: "" },
+        reportedAt: { type: Date, default: Date.now }
+      }
+    ],
+    default: []
+  },
+  assignedTo: {
+    workerId: { type: String, default: null },
+    workerName: { type: String, default: null },
+    assignedAt: { type: Date, default: null },
+    assignedBy: { type: String, default: null }
+  },
+  workProgress: {
+    startedAt: { type: Date, default: null },
+    completedAt: { type: Date, default: null },
+    workerNotes: { type: String, default: "" },
+    fieldImages: { type: [String], default: [] }
+  }
+}, { timestamps: true });
+
+export default mongoose.model("Complaint", complaintSchema);
+```
+
+### C.4 Frontend Main Logic (`frontend/js/main.js`)
+
+```js
+const API_BASE_URL = "http://localhost:5000/api/complaints";
+
+async function submitComplaint(e) {
+  e.preventDefault();
+
+  const formData = new FormData();
+  formData.append("name", document.getElementById("name").value);
+
+  let selectedCategory = document.getElementById("category").value;
+  if (selectedCategory === "Other") {
+    selectedCategory = document.getElementById("otherCategoryInput").value;
+  }
+
+  formData.append("category", selectedCategory);
+  formData.append("area", document.getElementById("location").value);
+  formData.append("wardNumber", document.getElementById("wardNumber").value || "");
+  formData.append("latitude", document.getElementById("latitude").value);
+  formData.append("longitude", document.getElementById("longitude").value);
+  formData.append("description", document.getElementById("description").value);
+
+  const imageFile = document.getElementById("image").files[0];
+  if (imageFile) {
+    formData.append("image", imageFile);
+  }
+
+  try {
+    const res = await fetch(API_BASE_URL, {
+      method: "POST",
+      body: formData
+    });
+
+    const result = await res.json();
+    alert(`Complaint Registered. ID: ${result.complaintId}`);
+    document.querySelector("form").reset();
+    loadDashboard();
+  } catch (err) {
+    alert("Submission failed: " + err.message);
+  }
+}
+
+async function loadDashboard() {
+  try {
+    const res = await fetch(API_BASE_URL);
+    const data = await res.json();
+    const table = document.getElementById("dashboardTable");
+    if (!table) return;
+
+    table.innerHTML = "";
+    data.forEach(c => {
+      table.innerHTML += `
+        <tr>
+          <td>${c.complaintId}</td>
+          <td>${c.category}</td>
+          <td>${c.wardNumber || c.area}</td>
+          <td>${c.status || "Pending"}</td>
+          <td>${c.reportCount}</td>
+          <td>
+            ${c.image
+              ? `<img src="http://localhost:5000/uploads/${c.image}" width="70">`
+              : "No Image"}
+          </td>
+        </tr>
+      `;
+    });
+  } catch (err) {
+    console.error("Dashboard load error:", err);
+  }
+}
+
+async function trackComplaint() {
+  const id = document.getElementById("trackId").value;
+  if (!id) return alert("Please enter Complaint ID");
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/track/${id}`);
+    if (!res.ok) throw new Error("Invalid ID");
+    const data = await res.json();
+
+    document.getElementById("result").innerHTML = `
+      <strong>Complaint Status:</strong><br>
+      Status: <strong>${data.status || "Pending"}</strong><br>
+      Reports: ${data.reportCount || 1}
+    `;
+  } catch {
+    document.getElementById("result").innerHTML =
+      "Invalid Complaint ID. Please check and try again.";
+  }
+}
+```
 
 ---
 

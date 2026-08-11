@@ -40,7 +40,12 @@ router.post("/", upload.single("image"), async (req, res) => {
       latitude: req.body.latitude || "",
       longitude: req.body.longitude || "",
       description: req.body.description,
-      image: req.file ? req.file.filename : ""  // ✅ Image stored here
+      image: req.file ? req.file.filename : "",  // ✅ Image stored here
+      reportedBy: {
+        userId: req.body.userId || "",
+        name: req.body.name || "",
+        email: req.body.userEmail || ""
+      }
     });
 
     await complaint.save();
@@ -150,6 +155,45 @@ router.put("/:id", async (req, res) => {
 
     res.json({ status: updated.status });
 
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ================================
+// USER VERIFY RESOLUTION (WITH PROOF)
+// ================================
+router.put("/:id/verify-resolution", async (req, res) => {
+  try {
+    const { userId, userName, note } = req.body;
+
+    const complaint = await Complaint.findById(req.params.id);
+    if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+
+    if (complaint.status !== "Resolved") {
+      return res.status(400).json({ message: "Only resolved complaints can be verified" });
+    }
+
+    if (!complaint.workProgress?.resolvedImage) {
+      return res.status(400).json({ message: "Resolution proof image is not uploaded yet" });
+    }
+
+    complaint.workProgress.userVerification = {
+      verified: true,
+      verifiedAt: new Date(),
+      verifiedByUserId: userId || "",
+      verifiedByName: userName || "",
+      note: note || ""
+    };
+
+    await complaint.save();
+
+    res.json({
+      message: "Resolution verified successfully",
+      verification: complaint.workProgress.userVerification
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

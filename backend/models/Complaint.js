@@ -29,6 +29,11 @@ const complaintSchema = new mongoose.Schema({
     ],
     default: []
   },
+  reportedBy: {
+    userId: { type: String, default: "" },
+    name: { type: String, default: "" },
+    email: { type: String, default: "" }
+  },
   // Worker Assignment Fields
   assignedTo: {
     workerId: { type: String, default: null },
@@ -40,7 +45,16 @@ const complaintSchema = new mongoose.Schema({
     startedAt: { type: Date, default: null },
     completedAt: { type: Date, default: null },
     workerNotes: { type: String, default: "" },
-    fieldImages: { type: [String], default: [] }
+    fieldImages: { type: [String], default: [] },
+    resolvedImage: { type: String, default: "" },
+    resolvedImageUploadedAt: { type: Date, default: null },
+    userVerification: {
+      verified: { type: Boolean, default: false },
+      verifiedAt: { type: Date, default: null },
+      verifiedByUserId: { type: String, default: "" },
+      verifiedByName: { type: String, default: "" },
+      note: { type: String, default: "" }
+    }
   }
 }, { timestamps: true });
 
